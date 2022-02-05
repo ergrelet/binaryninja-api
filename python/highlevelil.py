@@ -158,6 +158,7 @@ class HighLevelILInstruction(BaseILInstruction):
 	    HighLevelILOperation.HLIL_BREAK: [], HighLevelILOperation.HLIL_CONTINUE: [], HighLevelILOperation.HLIL_JUMP: [
 	        ("dest", "expr")
 	    ], HighLevelILOperation.HLIL_RET: [("src", "expr_list")], HighLevelILOperation.HLIL_NORET: [],
+		HighLevelILOperation.HLIL_UNREACHABLE: [],
 	    HighLevelILOperation.HLIL_GOTO: [("target", "label")], HighLevelILOperation.HLIL_LABEL: [
 	        ("target", "label")
 	    ], HighLevelILOperation.HLIL_VAR_DECLARE: [("var", "var")], HighLevelILOperation.HLIL_VAR_INIT: [
@@ -1007,6 +1008,11 @@ class HighLevelILRet(HighLevelILInstruction, ControlFlow):
 
 @dataclass(frozen=True, repr=False, eq=False)
 class HighLevelILNoret(HighLevelILInstruction, Terminal):
+	pass
+
+
+@dataclass(frozen=True, repr=False, eq=False)
+class HighLevelILUnreachable(HighLevelILInstruction, Terminal):
 	pass
 
 
@@ -1931,6 +1937,7 @@ ILInstruction = {
     HighLevelILOperation.HLIL_JUMP: HighLevelILJump,  #  ("dest", "expr"),
     HighLevelILOperation.HLIL_RET: HighLevelILRet,  #  ("src", "expr_list"),
     HighLevelILOperation.HLIL_NORET: HighLevelILNoret,  #  ,
+    HighLevelILOperation.HLIL_UNREACHABLE: HighLevelILUnreachable,  #  ,
     HighLevelILOperation.HLIL_GOTO: HighLevelILGoto,  #  ("target", "label"),
     HighLevelILOperation.HLIL_LABEL: HighLevelILLabel,  #  ("target", "label"),
     HighLevelILOperation.HLIL_VAR_DECLARE: HighLevelILVarDeclare,  #  ("var", "var"),
