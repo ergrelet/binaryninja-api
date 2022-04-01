@@ -10,8 +10,6 @@
 #include "uitypes.h"
 #include "viewframe.h"
 
-#include "debuggerapi.h"
-
 //! A variable list item can represent either a function-local variable, or a
 //! data variable referenced by the current function.
 enum class VariableListItemType
@@ -141,8 +139,6 @@ class BINARYNINJAUIAPI VariableList : public SidebarWidget
 
 	uint64_t m_lastOffset;
 	QTimer* m_refreshTimer;
-
-	Ref<BinaryNinjaDebuggerAPI::DebuggerController> m_debugger;
 
 	void processRefresh();
 
