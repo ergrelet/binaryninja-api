@@ -3590,6 +3590,15 @@ namespace BinaryNinja {
 		Confidence<Ref<Type>> type;
 		std::string name;
 		bool autoDefined;
+
+		bool operator==(const VariableNameAndType& a)
+		{
+			return (var == a.var) && (type == a.type) && (name == a.name) && (autoDefined == a.autoDefined);
+		}
+		bool operator!=(const VariableNameAndType& a)
+		{
+			return !(*this == a);
+		}
 	};
 
 	struct StackVariableReference
