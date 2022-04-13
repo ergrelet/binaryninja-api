@@ -900,7 +900,7 @@ class BinaryViewType(metaclass=_BinaryViewTypeMetaclass):
 			if available.name == "Universal":
 				universal_bvt = available
 				continue
-			if bvt is None and available.name != "Raw":
+			if bvt is None and available.name not in ["Raw", "Debugger"]:
 				bvt = available
 
 		if bvt is None:
