@@ -1403,6 +1403,7 @@ extern "C"
 		BNBinaryView* (*create)(void* ctxt, BNBinaryView* data);
 		BNBinaryView* (*parse)(void* ctxt, BNBinaryView* data);
 		bool (*isValidForData)(void* ctxt, BNBinaryView* data);
+		bool (*isDeprecated)(void* ctxt);
 		BNSettings* (*getLoadSettingsForData)(void* ctxt, BNBinaryView* data);
 	};
 

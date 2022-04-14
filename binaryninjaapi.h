@@ -2270,6 +2270,7 @@ namespace BinaryNinja {
 		static BNBinaryView* CreateCallback(void* ctxt, BNBinaryView* data);
 		static BNBinaryView* ParseCallback(void* ctxt, BNBinaryView* data);
 		static bool IsValidCallback(void* ctxt, BNBinaryView* data);
+		static bool IsDeprecatedCallback(void* ctxt);
 		static BNSettings* GetSettingsCallback(void* ctxt, BNBinaryView* data);
 
 		BinaryViewType(BNBinaryViewType* type);
@@ -2300,7 +2301,7 @@ namespace BinaryNinja {
 		std::string GetName();
 		std::string GetLongName();
 
-		bool IsDeprecated();
+		virtual bool IsDeprecated();
 
 		virtual BinaryView* Create(BinaryView* data) = 0;
 		virtual BinaryView* Parse(BinaryView* data) = 0;
