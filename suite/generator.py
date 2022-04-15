@@ -36,9 +36,15 @@ sys.path.append(api_suite_path)
 # support direct invocation of configuration unit.py
 commondir = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", ".."))
 sys.path.append(commondir)
+
+debugger_suite_path = os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "..", "..",
+                                                    "public", "debugger", "test"))
+sys.path.append(debugger_suite_path)
+
 import config
 import testcommon
 import api_test
+import debugger_test
 
 
 class TestBinaryNinja(unittest.TestCase):
@@ -148,6 +154,8 @@ def main():
                 config.verbose = True
             elif sys.argv[i] == '--api-only':
                 config.api_only = True
+            elif sys.argv[i] == '--debugger-only':
+                config.debugger_only = True
             else:
                 # otherwise the argument is taken as a test case search keyword
                 test_keyword = sys.argv[i]
@@ -155,6 +163,9 @@ def main():
     if config.api_only:
         runner = unittest.TextTestRunner(verbosity=2)
         test_suite = unittest.defaultTestLoader.loadTestsFromModule(api_test)
+    elif config.debugger_only:
+        runner = unittest.TextTestRunner(verbosity=2)
+        test_suite = unittest.defaultTestLoader.loadTestsFromModule(debugger_test)
     else:
         runner = unittest.TextTestRunner(verbosity=2)
         test_suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestBinaryNinja)
