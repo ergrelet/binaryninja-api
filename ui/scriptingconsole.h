@@ -195,4 +195,5 @@ class BINARYNINJAUIAPI ScriptingConsole : public GlobalAreaWidget, BinaryNinja::
 	std::vector<std::string> reverseSearch(const QString& text);
 
 	void closing();
+	void runScriptFromFile();
 };

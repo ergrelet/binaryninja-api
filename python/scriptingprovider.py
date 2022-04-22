@@ -118,6 +118,7 @@ class ScriptingInstance:
 			self._cb.externalRefTaken = self._cb.externalRefTaken.__class__(self._external_ref_taken)
 			self._cb.externalRefReleased = self._cb.externalRefReleased.__class__(self._external_ref_released)
 			self._cb.executeScriptInput = self._cb.executeScriptInput.__class__(self._execute_script_input)
+			self._cb.executeScriptInputFromFilename = self._cb.executeScriptInputFromFilename.__class__(self._execute_script_input_from_filename)
 			self._cb.cancelScriptInput = self._cb.cancelScriptInput.__class__(self._cancel_script_input)
 			self._cb.setCurrentBinaryView = self._cb.setCurrentBinaryView.__class__(self._set_current_binary_view)
 			self._cb.setCurrentFunction = self._cb.setCurrentFunction.__class__(self._set_current_function)
@@ -152,6 +153,13 @@ class ScriptingInstance:
 	def _execute_script_input(self, ctxt, text):
 		try:
 			return self.perform_execute_script_input(text)
+		except:
+			log_error(traceback.format_exc())
+			return ScriptingProviderExecuteResult.InvalidScriptInput
+
+	def _execute_script_input_from_filename(self, ctxt, filename):
+		try:
+			return self.perform_execute_script_input_from_filename(filename)
 		except:
 			log_error(traceback.format_exc())
 			return ScriptingProviderExecuteResult.InvalidScriptInput
@@ -236,6 +244,10 @@ class ScriptingInstance:
 		return ScriptingProviderExecuteResult.InvalidScriptInput
 
 	@abc.abstractmethod
+	def perform_execute_script_input_from_filename(self, text):
+		return ScriptingProviderExecuteResult.InvalidScriptInput
+
+	@abc.abstractmethod
 	def perform_cancel_script_input(self):
 		return ScriptingProviderExecuteResult.ScriptExecutionCancelled
 
@@ -283,6 +295,9 @@ class ScriptingInstance:
 
 	def execute_script_input(self, text):
 		return core.BNExecuteScriptInput(self.handle, text)
+
+	def execute_script_input_from_filename(self, filename):
+		return core.BNExecuteScriptInputFromFilename(self.handle, filename)
 
 	def cancel_script_input(self, text):
 		return core.BNCancelScriptInput(self.handle)
@@ -798,6 +813,22 @@ from binaryninja import *
 		self.input_ready_state = ScriptingProviderInputReadyState.NotReadyForInput
 		self.interpreter.execute(text)
 		return ScriptingProviderExecuteResult.SuccessfulScriptExecution
+
+	@abc.abstractmethod
+	def perform_execute_script_input_from_filename(self, filename):
+		if not os.path.exists(filename) and os.path.isfile(filename):
+			return ScriptingProviderExecuteResult.InvalidScriptInput  # TODO: maybe this isn't the best result to use?
+		try:
+			with open(filename, 'r') as fp:
+				file_contents = fp.read().encode("utf-8")
+		except IOError:
+			# File was not readable or something went horribly wrong
+			return ScriptingProviderExecuteResult.InvalidScriptInput
+
+		if len(file_contents) == 0:
+			return ScriptingProviderExecuteResult.SuccessfulScriptExecution
+
+		return self.perform_execute_script_input(file_contents)
 
 	@abc.abstractmethod
 	def perform_cancel_script_input(self):
