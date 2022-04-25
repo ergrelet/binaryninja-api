@@ -817,10 +817,11 @@ from binaryninja import *
 	@abc.abstractmethod
 	def perform_set_current_binary_view(self, view):
 		self.interpreter.current_view = view
-		if view is not None:
-			self.interpreter.current_dbg = DebuggerController(view)
-		else:
-			self.interpreter.current_dbg = None
+		if settings.Settings().get_bool('corePlugins.debugger'):
+			if view is not None:
+				self.interpreter.current_dbg = DebuggerController(view)
+			else:
+				self.interpreter.current_dbg = None
 
 	@abc.abstractmethod
 	def perform_set_current_function(self, func):
