@@ -47,7 +47,7 @@ def modulelist(modulename):
 	"json", "numbers", "threading", "re", "requests", "os", "startup", 
 	"associateddatastore", "range", "pyNativeStr", "cstr", "fnsignature", 
 	"get_class_members", "datetime", "inspect", "subprocess", "site", 
-	"string", "random", "uuid", "queue", "collections"]
+	"string", "random", "uuid", "queue", "collections", "dbgcore"]
 	return sorted(set(x for x in modules if x[0] not in moduleblacklist))
 
 def classlist(module):
@@ -92,7 +92,9 @@ Full Class List
 ''')
 
 	for modulename, module in modulelist(binaryninja):
-		filename = f"binaryninja.{modulename}-module.rst"
+		# Since we put debugger python files in a folder, binaryninja.{modulename} is no longer the
+		# correct name of the module
+		filename = f"{module.__name__}-module.rst"
 		pythonrst.write(f"   {modulename} <{filename}>\n")
 		modulefile = open(filename, "w")
 		underline = "="*len(f"{modulename} module")
@@ -105,12 +107,12 @@ Full Class List
 ''')
 
 		for (classname, classref) in classlist(module):
-			modulefile.write(f"   binaryninja.{modulename}.{classname}\n")
+			modulefile.write(f"   {module.__name__}.{classname}\n")
 
 		modulefile.write('''\n.. toctree::
    :maxdepth: 2\n''')
 
-		modulefile.write(f'''\n\n.. automodule:: binaryninja.{modulename}
+		modulefile.write(f'''\n\n.. automodule:: {module.__name__}
    :members:
    :undoc-members:
    :show-inheritance:''')
