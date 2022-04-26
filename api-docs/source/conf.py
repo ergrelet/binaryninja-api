@@ -42,12 +42,13 @@ import binaryninja
 
 def modulelist(modulename):
 	modules = inspect.getmembers(modulename, inspect.ismodule)
+	# We block the module named "debugger", because it is the folder that contains all debugger Python files
 	moduleblacklist = ["abc", "atexit", "binaryninja", "builtins", "ctypes", 
 	"core", "struct", "sys", "_binaryninjacore", "traceback", "code", "enum", 
 	"json", "numbers", "threading", "re", "requests", "os", "startup", 
 	"associateddatastore", "range", "pyNativeStr", "cstr", "fnsignature", 
 	"get_class_members", "datetime", "inspect", "subprocess", "site", 
-	"string", "random", "uuid", "queue", "collections", "dbgcore"]
+	"string", "random", "uuid", "queue", "collections", "dbgcore", "debugger"]
 	return sorted(set(x for x in modules if x[0] not in moduleblacklist))
 
 def classlist(module):
