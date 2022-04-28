@@ -1,7 +1,5 @@
 # Debugger (Beta)
 
-# Introduction
-
 Binary Ninja Debugger is a plugin that can debug executables on Windows, Linux, and macOS.
 
 The debugger plugin is shipped with Binary Ninja. However, it is currently in Beta, so it needs to be manually turned on. The relevant setting is in "Settings" -> "corePlugins" -> "Debugger Plugin (Beta)".
@@ -13,9 +11,9 @@ After enabling the debugger plugin, restart Binary Ninja to use it.
 The debugger is open-source at https://github.com/Vector35/debugger with Apache License 2.0. Bug reports and pull requests are welcome!
 
 
-# UI
+## UI
 
-![](../img/debugger/ui.png)
+<img src="../img/debugger/ui.png" width="1000"/>
 
 The debugger UI mainly consists of five parts:
 
@@ -27,13 +25,13 @@ The debugger UI mainly consists of five parts:
 
 The current UI should accommodate common operations within the debugger. And it is set to receive huge improvements over this summer.
 
-## Debugger Sidebar
+### Debugger Sidebar
 
 The debugger sidebar locates inside the sidebar, which is on the left side of the main window. It can be enabled by clicking the button that looks like a bug.
 
 The debugger sidebar contains four widgets, the control buttons, the register widget, the breakpoint widget, and the module widget.
 
-### Control Buttons
+#### Control Buttons
 
 ![](../img/debugger/controlbuttons.png)
 
@@ -50,7 +48,7 @@ For `Step Into` and `Step Over`, if the current view is viewing an IL function, 
 ![](../img/debugger/adaptersettings.png)
 
 
-### Register Widget
+#### Register Widget
 
 ![](../img/debugger/registerwidget.png)
 
@@ -63,7 +61,7 @@ The Register widget tracks the last seen value of registers and provides visual 
 An experimental feature is added to shorten the list: registers with a value of zero are not shown in the list. We will evaluate how well it works, and probably going to offer it as a configurable option.
 
 
-### Breakpoint Widget
+#### Breakpoint Widget
 
 ![](../img/debugger/breakpointwidget.png)
 
@@ -71,7 +69,7 @@ The breakpoint widget lists breakpoints in the target. There are two columns in 
 
 The context menu of the widget offers to delete a breakpoint or to jump to the address of a breakpoint.
 
-### Module Widget
+#### Module Widget
 
 ![](../img/debugger/modulewidget.png)
 
@@ -81,11 +79,11 @@ Note: the bizarrely huge size is caused by dyld_shared_cache on macOS, which wil
 
 
 
-## Global Area Panels
+### Global Area Panels
 
 The debugger adds three new global area widgets, i.e., target terminal, debugger console, and stack trace.
 
-### Target Terminal
+#### Target Terminal
 
 ![](../img/debugger/targetterminal.png)
 
@@ -95,7 +93,7 @@ Due to a backend limitation, this feature only works on macOS and Linux. On Wind
 
 On macOS and Linux, the default setting redirects the stdin/stdout here. However, if the user configures the target to run in its terminal (by calling `dbg.request_terminal_emulator = True`), then the stdin/stdout will not be redirected, and need to be accessed in the target's terminal.
 
-### Debugger Console
+#### Debugger Console
 
 ![](../img/debugger/debuggerconsole.png)
 
@@ -107,7 +105,7 @@ On Windows, the backend is based on Windows Debugger Engine, which supports Wind
 
 Note, however, one should NOT execute any command that changes the execution status of the target, E.g., resume/step the target, or launch/quit the target. It will cause the UI to de-synchronize with the backend, or even hang. We have given a high priority to fixing this issue.
 
-### Stack Trace
+#### Stack Trace
 
 ![](../img/debugger/stacktracewidget.png)
 
@@ -120,7 +118,7 @@ Double-clicking an item in the stack frames list navigates to the return address
 
 
 
-## Debugger Status Widget
+### Debugger Status Widget
 
 ![](../img/debugger/statuswidget.png)
 
@@ -133,7 +131,7 @@ For example, when the target stops, it will include the reason for the stop. Whe
 The widget always shows the status of the debugger for the current binary view. If you switch to a tab that views a different binary, it will show the status of the debugger for that binary, which might be inactive.
 
 
-## Context menu
+### Context menu
 
 ![](../img/debugger/contextmenu.png)
 
@@ -147,7 +145,7 @@ Among these actions, target control actions, e.g., `Run`/`Step Into` have the sa
 
 `Make Code` is an experimental feature that displays the selected region as code. If the region is indeed code, the user can then hit `P` to create a function there.
 
-## Stack variable annotation
+### Stack variable annotation
 
 ![](../img/debugger/stackvariable.png)
 
@@ -166,7 +164,7 @@ Only the stack frames and variables of the current (active) thread are annotated
 The annotation is done only when there are at least two frames in the stack trace. This is a known limitation, and we will address it later.
 
 
-## Other UI elements
+### Other UI elements
 
 On every line that has a breakpoint, there are two visual indicators:
 
@@ -179,9 +177,9 @@ On the line where the program counter is at, there are two visual indicators:
 - a program counter tag is added to the left
 
 
-# Design
+## Design
 
-## Debug Adapters
+### Debug Adapters
 
 The goal of the Binary Ninja debugger is to provide a unified way of debugging programs on different platforms (e.g., Windows, Linux, macOS, etc). However, this is not an easy task, because each platform has its way of supporting debugging and it varies considerably.
 
@@ -196,7 +194,7 @@ New debug adapters can be created by subclassing `DebugAdapter` to support other
 Remote debugging is a planned feature. Specifically, the capacity to connect to a target via [RSP protocol](https://sourceware.org/gdb/current/onlinedocs/gdb/Remote-Protocol.html) is already baked into the LLDBAdapter, though not tested.
 
 
-## The Debugger BinaryView
+### The Debugger BinaryView
 
 To represent the memory space of the target, the debugger creates a specialized `BinaryView` called `DebugProcessView`. Throughout this document, it is also called the `Debugger` BinaryView.
 
@@ -214,7 +212,7 @@ The Debugger BinaryView can be accessed by `dbg.live_view`, which should not be 
 
 Right now, the Debugger BinaryView is discarded once the target exits. It cannot be easily reused due to ASLR, which makes the base of the program different in each run. As a result, any changes the user made to the Debugger BinaryView is also gone after the target exits. In the future, we will provide a way to let the user to selectively commit the changes made to the original view.
 
-# API
+## API
 
 The debugger exposes its functionality in both Python and C++ API. The Python documentation can be accessed [online](https://api.binary.ninja/binaryninja.debugger.debuggercontroller-module.html).
 
@@ -232,11 +230,11 @@ One can simply run `dbg.launch()` in the Python console to launch the target.
 
 
 
-# How-to Guide
+## How-to Guide
 
 Here is an incomplete guide on how to get started with the debugger. It covers the most basics operations in the debugger.
 
-## Launch and Control the Target
+### Launch and Control the Target
 
 There are several ways to launch the target:
 
@@ -247,32 +245,32 @@ There are several ways to launch the target:
 Note, one should never issue any command that changes the execution status of the target in the `Debugger Console`, which causes the UI to go out of sync with the backend.
 
 
-## Configure Launch Parameters
+### Configure Launch Parameters
 
 - Click the Settings button which is on the right side of the control buttons widget, and edit parameters in the dialog
 - directly set the value of `dbg.cmd_line`, `dbg.working_directory`, `dbg.working_dir`, etc
 
 
-## Add/Remove Breakpoints
+### Add/Remove Breakpoints
 
 - Select the line, use the `Toggle Breakpoint` context menu
 - Right-click a line in the Breakpoint widget in the sidebar, and select `Remove Breakpoint`
 - run `dbg.add_breakpoint(address)` or `dbg.delete_breakpoint(address)` in the Python console.
 
 
-## Modify Register Values
+### Modify Register Values
 
 - Double-click a value item in the Register widget, type in the new value, and hit enter
 - run `dbg.set_reg_value(reg_name, value)` in the Python console.
 
 
-## View/Edit Memory
+### View/Edit Memory
 
 - Switch to Linear or hex view of the Debugger BinaryView, and view/edit in the normal way
 - get the Debugger BinaryView by `dbg.live_view`, and read/write it in the normal way
 
 
-# Open-Source
+## Open-Source
 
 Vector 35 is grateful for the following open source packages that are used in Binary Ninja debugger:
 
