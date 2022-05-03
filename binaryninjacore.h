@@ -211,6 +211,7 @@ extern "C"
 	struct BNRepository;
 	struct BNRepoPlugin;
 	struct BNRepositoryManager;
+	struct BNComponent;
 	struct BNSettings;
 	struct BNMetadata;
 	struct BNReportCollection;
@@ -5702,6 +5703,31 @@ extern "C"
 	BINARYNINJACOREAPI BNRepositoryManager* BNGetRepositoryManager();
 
 	BINARYNINJACOREAPI BNRepository* BNRepositoryManagerGetDefaultRepository(BNRepositoryManager* r);
+
+	// Components
+	/*
+	BINARYNINJACOREAPI BNComponent* BNComponentCreateEmpty(void);
+	BINARYNINJACOREAPI void BNComponentAddFunctionReference(BNComponent* component, BNFunction* function, bool addReferences = true);
+	BINARYNINJACOREAPI void BNComponentAddTypeReference(BNComponent *component, BNType *type);
+	BINARYNINJACOREAPI void BNComponentAddDataVariableReference(BNComponent *component, BNDataVariable *dataVariable);
+	BINARYNINJACOREAPI void BNComponentAddComponentReference(BNComponent *component, BNComponent *referenceComponent);
+	BINARYNINJACOREAPI void BNComponentAddAllMembersFromComponent(BNComponent *component, BNComponent *fromComponent);
+
+	BINARYNINJACOREAPI void BNComponentRemoveFunctionReference(BNComponent *component, BNFunction *function, bool removeReferences = true);
+	BINARYNINJACOREAPI void BNComponentRemoveTypeReference(BNComponent *component, BNType *type);
+	BINARYNINJACOREAPI void BNComponentRemoveDataVariableReference(BNComponent *component, BNDataVariable *dataVariable);
+	BINARYNINJACOREAPI void BNComponentRemoveComponentReference(BNComponent *component, BNComponent *referenceComponent);
+	BINARYNINJACOREAPI void BNComponentRemoveAllFunctions(BNComponent *component);
+	BINARYNINJACOREAPI void BNComponentRemoveAllTypes(BNComponent *component);
+	BINARYNINJACOREAPI void BNComponentRemoveAllDataVariables(BNComponent *component);
+	BINARYNINJACOREAPI void BNComponentRemoveAllComponents(BNComponent *component);
+	BINARYNINJACOREAPI void BNComponentRemoveAllMembers(BNComponent *component);
+
+	BINARYNINJACOREAPI void BNComponentGetContainedFunctions(BNComponent *component);
+	BINARYNINJACOREAPI void BNComponentGetContainedTypes(BNComponent *component);
+	BINARYNINJACOREAPI void BNComponentGetContainedDataVariables(BNComponent *component);
+	BINARYNINJACOREAPI void BNComponentGetContainedComponents(BNComponent *component);
+	*/
 
 	// LLVM Services APIs
 	BINARYNINJACOREAPI void BNLlvmServicesInit(void);
