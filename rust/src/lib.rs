@@ -58,6 +58,7 @@ pub mod headless;
 pub mod interaction;
 pub mod linearview;
 pub mod llil;
+pub mod mlil;
 pub mod platform;
 pub mod rc;
 pub mod section;
@@ -107,6 +108,7 @@ pub mod logger {
     use binaryninjacore_sys::{BNLogListener, BNUpdateLogListeners};
 
     struct Logger;
+
     static LOGGER: Logger = Logger;
 
     impl log::Log for Logger {
@@ -193,13 +195,25 @@ pub mod logger {
         LogGuard { ctxt: raw }
     }
 
-    extern "C" fn cb_log<L>(ctxt: *mut c_void, session: usize, level: Level, msg: *const c_char, logger_name: *const c_char, tid: usize)
-    where
+    extern "C" fn cb_log<L>(
+        ctxt: *mut c_void,
+        session: usize,
+        level: Level,
+        msg: *const c_char,
+        logger_name: *const c_char,
+        tid: usize,
+    ) where
         L: LogListener,
     {
         ffi_wrap!("LogListener::log", unsafe {
             let listener = &*(ctxt as *const L);
-            listener.log(session, level, BnStr::from_raw(msg), BnStr::from_raw(logger_name), tid);
+            listener.log(
+                session,
+                level,
+                BnStr::from_raw(msg),
+                BnStr::from_raw(logger_name),
+                tid,
+            );
         })
     }
 
@@ -232,7 +246,11 @@ pub fn open_view<F: AsRef<Path>>(filename: F) -> Result<rc::Ref<binaryview::Bina
 
     let mut metadata = filemetadata::FileMetadata::with_filename(filename.to_str().unwrap());
 
-    let (is_bndb, view) = if filename.extension().map(|ext| ext == "bndb").unwrap_or(false) {
+    let (is_bndb, view) = if filename
+        .extension()
+        .map(|ext| ext == "bndb")
+        .unwrap_or(false)
+    {
         let mut file = File::open(filename).or(Err("Could not open file".to_string()))?;
 
         let mut buf = [0; 15];
