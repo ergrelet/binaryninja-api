@@ -197,7 +197,6 @@ extern "C"
 	struct BNLinearViewCursor;
 	struct BNDebugInfo;
 	struct BNDebugInfoParser;
-	struct BNSecretsProvider;
 	struct BNLogger;
 	struct BNInstructionTextLine;
 
@@ -303,53 +302,6 @@ extern "C"
 		uint64_t time;
 	};
 
-	enum BNPluginCommandType
-	{
-		DefaultPluginCommand,
-		AddressPluginCommand,
-		RangePluginCommand,
-		FunctionPluginCommand,
-		LowLevelILFunctionPluginCommand,
-		LowLevelILInstructionPluginCommand,
-		MediumLevelILFunctionPluginCommand,
-		MediumLevelILInstructionPluginCommand,
-		HighLevelILFunctionPluginCommand,
-		HighLevelILInstructionPluginCommand
-	};
-
-	struct BNPluginCommand
-	{
-		char* name;
-		char* description;
-		BNPluginCommandType type;
-		void* context;
-
-		void (*defaultCommand)(void* ctxt, BNBinaryView* view);
-		void (*addressCommand)(void* ctxt, BNBinaryView* view, uint64_t addr);
-		void (*rangeCommand)(void* ctxt, BNBinaryView* view, uint64_t addr, uint64_t len);
-		void (*functionCommand)(void* ctxt, BNBinaryView* view, BNFunction* func);
-		void (*lowLevelILFunctionCommand)(void* ctxt, BNBinaryView* view, BNLowLevelILFunction* func);
-		void (*lowLevelILInstructionCommand)(void* ctxt, BNBinaryView* view, BNLowLevelILFunction* func, size_t instr);
-		void (*mediumLevelILFunctionCommand)(void* ctxt, BNBinaryView* view, BNMediumLevelILFunction* func);
-		void (*mediumLevelILInstructionCommand)(
-		    void* ctxt, BNBinaryView* view, BNMediumLevelILFunction* func, size_t instr);
-		void (*highLevelILFunctionCommand)(void* ctxt, BNBinaryView* view, BNHighLevelILFunction* func);
-		void (*highLevelILInstructionCommand)(
-		    void* ctxt, BNBinaryView* view, BNHighLevelILFunction* func, size_t instr);
-
-		bool (*defaultIsValid)(void* ctxt, BNBinaryView* view);
-		bool (*addressIsValid)(void* ctxt, BNBinaryView* view, uint64_t addr);
-		bool (*rangeIsValid)(void* ctxt, BNBinaryView* view, uint64_t addr, uint64_t len);
-		bool (*functionIsValid)(void* ctxt, BNBinaryView* view, BNFunction* func);
-		bool (*lowLevelILFunctionIsValid)(void* ctxt, BNBinaryView* view, BNLowLevelILFunction* func);
-		bool (*lowLevelILInstructionIsValid)(void* ctxt, BNBinaryView* view, BNLowLevelILFunction* func, size_t instr);
-		bool (*mediumLevelILFunctionIsValid)(void* ctxt, BNBinaryView* view, BNMediumLevelILFunction* func);
-		bool (*mediumLevelILInstructionIsValid)(
-		    void* ctxt, BNBinaryView* view, BNMediumLevelILFunction* func, size_t instr);
-		bool (*highLevelILFunctionIsValid)(void* ctxt, BNBinaryView* view, BNHighLevelILFunction* func);
-		bool (*highLevelILInstructionIsValid)(
-		    void* ctxt, BNBinaryView* view, BNHighLevelILFunction* func, size_t instr);
-	};
 
 	struct BNStackVariableReference;
 
@@ -446,54 +398,6 @@ extern "C"
 		FindTypeBytes
 	};
 
-	enum BNScriptingProviderInputReadyState
-	{
-		NotReadyForInput,
-		ReadyForScriptExecution,
-		ReadyForScriptProgramInput
-	};
-
-	enum BNScriptingProviderExecuteResult
-	{
-		InvalidScriptInput,
-		IncompleteScriptInput,
-		SuccessfulScriptExecution,
-		ScriptExecutionCancelled
-	};
-
-
-	struct BNScriptingInstanceCallbacks
-	{
-		void* context;
-		void (*destroyInstance)(void* ctxt);
-		void (*externalRefTaken)(void* ctxt);
-		void (*externalRefReleased)(void* ctxt);
-		BNScriptingProviderExecuteResult (*executeScriptInput)(void* ctxt, const char* input);
-		void (*cancelScriptInput)(void* ctxt);
-		void (*setCurrentBinaryView)(void* ctxt, BNBinaryView* view);
-		void (*setCurrentFunction)(void* ctxt, BNFunction* func);
-		void (*setCurrentBasicBlock)(void* ctxt, BNBasicBlock* block);
-		void (*setCurrentAddress)(void* ctxt, uint64_t addr);
-		void (*setCurrentSelection)(void* ctxt, uint64_t begin, uint64_t end);
-		char* (*completeInput)(void* ctxt, const char* text, uint64_t state);
-		void (*stop)(void* ctxt);
-	};
-
-	struct BNScriptingProviderCallbacks
-	{
-		void* context;
-		BNScriptingInstance* (*createInstance)(void* ctxt);
-		bool (*loadModule)(void* ctxt, const char* repoPath, const char* pluginPath, bool force);
-		bool (*installModules)(void* ctxt, const char* modules);
-	};
-
-	struct BNScriptingOutputListener
-	{
-		void* context;
-		void (*output)(void* ctxt, const char* text);
-		void (*error)(void* ctxt, const char* text);
-		void (*inputReadyStateChanged)(void* ctxt, BNScriptingProviderInputReadyState state);
-	};
 
 	struct BNMainThreadCallbacks
 	{
@@ -545,29 +449,7 @@ extern "C"
 	};
 
 	struct BNCallingConvention;
-	struct BNDebugFunctionInfo
-	{
-		char* shortName;
-		char* fullName;
-		char* rawName;
-		uint64_t address;
-		BNType* returnType;
-		char** parameterNames;
-		BNType** parameterTypes;
-		size_t parameterCount;
-		bool variableParameters;
-		BNCallingConvention* callingConvention;
-		BNPlatform* platform;
-	};
-
-	struct BNSecretsProviderCallbacks
-	{
-		void* context;
-		bool (*hasData)(void* ctxt, const char* key);
-		char* (*getData)(void* ctxt, const char* key);
-		bool (*storeData)(void* ctxt, const char* key, const char* data);
-		bool (*deleteData)(void* ctxt, const char* key);
-	};
+	
 
 	BINARYNINJACOREAPI char* BNAllocString(const char* contents);
 	BINARYNINJACOREAPI void BNFreeString(char* str);
@@ -880,60 +762,6 @@ extern "C"
 	BINARYNINJACOREAPI bool BNIsUpdateInstallationPending(void);
 	BINARYNINJACOREAPI void BNInstallPendingUpdate(char** errors);
 
-	// Plugin commands
-	BINARYNINJACOREAPI void BNRegisterPluginCommand(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view), bool (*isValid)(void* ctxt, BNBinaryView* view), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForAddress(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, uint64_t addr),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, uint64_t addr), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForRange(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, uint64_t addr, uint64_t len),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, uint64_t addr, uint64_t len), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForFunction(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, BNFunction* func),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, BNFunction* func), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForLowLevelILFunction(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, BNLowLevelILFunction* func),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, BNLowLevelILFunction* func), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForLowLevelILInstruction(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, BNLowLevelILFunction* func, size_t instr),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, BNLowLevelILFunction* func, size_t instr), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForMediumLevelILFunction(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, BNMediumLevelILFunction* func),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, BNMediumLevelILFunction* func), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForMediumLevelILInstruction(const char* name,
-	    const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, BNMediumLevelILFunction* func, size_t instr),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, BNMediumLevelILFunction* func, size_t instr), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForHighLevelILFunction(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, BNHighLevelILFunction* func),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, BNHighLevelILFunction* func), void* context);
-	BINARYNINJACOREAPI void BNRegisterPluginCommandForHighLevelILInstruction(const char* name, const char* description,
-	    void (*action)(void* ctxt, BNBinaryView* view, BNHighLevelILFunction* func, size_t instr),
-	    bool (*isValid)(void* ctxt, BNBinaryView* view, BNHighLevelILFunction* func, size_t instr), void* context);
-
-	BINARYNINJACOREAPI BNPluginCommand* BNGetAllPluginCommands(size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommands(BNBinaryView* view, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForAddress(
-	    BNBinaryView* view, uint64_t addr, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForRange(
-	    BNBinaryView* view, uint64_t addr, uint64_t len, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForFunction(
-	    BNBinaryView* view, BNFunction* func, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForLowLevelILFunction(
-	    BNBinaryView* view, BNLowLevelILFunction* func, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForLowLevelILInstruction(
-	    BNBinaryView* view, BNLowLevelILFunction* func, size_t instr, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForMediumLevelILFunction(
-	    BNBinaryView* view, BNMediumLevelILFunction* func, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForMediumLevelILInstruction(
-	    BNBinaryView* view, BNMediumLevelILFunction* func, size_t instr, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForHighLevelILFunction(
-	    BNBinaryView* view, BNHighLevelILFunction* func, size_t* count);
-	BINARYNINJACOREAPI BNPluginCommand* BNGetValidPluginCommandsForHighLevelILInstruction(
-	    BNBinaryView* view, BNHighLevelILFunction* func, size_t instr, size_t* count);
-	BINARYNINJACOREAPI void BNFreePluginCommandList(BNPluginCommand* commands);
-
 	// Download providers
 	BINARYNINJACOREAPI BNDownloadProvider* BNRegisterDownloadProvider(
 	    const char* name, BNDownloadProviderCallbacks* callbacks);
@@ -986,53 +814,6 @@ extern "C"
 	    BNWebsocketClient* client, const uint8_t* data, uint64_t len);
 	BINARYNINJACOREAPI bool BNDisconnectWebsocketClient(BNWebsocketClient* client);
 
-	// Scripting providers
-	BINARYNINJACOREAPI BNScriptingProvider* BNRegisterScriptingProvider(
-	    const char* name, const char* apiName, BNScriptingProviderCallbacks* callbacks);
-	BINARYNINJACOREAPI BNScriptingProvider** BNGetScriptingProviderList(size_t* count);
-	BINARYNINJACOREAPI void BNFreeScriptingProviderList(BNScriptingProvider** providers);
-	BINARYNINJACOREAPI BNScriptingProvider* BNGetScriptingProviderByName(const char* name);
-	BINARYNINJACOREAPI BNScriptingProvider* BNGetScriptingProviderByAPIName(const char* name);
-
-	BINARYNINJACOREAPI char* BNGetScriptingProviderName(BNScriptingProvider* provider);
-	BINARYNINJACOREAPI char* BNGetScriptingProviderAPIName(BNScriptingProvider* provider);
-	BINARYNINJACOREAPI BNScriptingInstance* BNCreateScriptingProviderInstance(BNScriptingProvider* provider);
-	BINARYNINJACOREAPI bool BNLoadScriptingProviderModule(
-	    BNScriptingProvider* provider, const char* repository, const char* module, bool force);
-	BINARYNINJACOREAPI bool BNInstallScriptingProviderModules(BNScriptingProvider* provider, const char* modules);
-
-	BINARYNINJACOREAPI BNScriptingInstance* BNInitScriptingInstance(
-	    BNScriptingProvider* provider, BNScriptingInstanceCallbacks* callbacks);
-	BINARYNINJACOREAPI BNScriptingInstance* BNNewScriptingInstanceReference(BNScriptingInstance* instance);
-	BINARYNINJACOREAPI void BNFreeScriptingInstance(BNScriptingInstance* instance);
-	BINARYNINJACOREAPI void BNNotifyOutputForScriptingInstance(BNScriptingInstance* instance, const char* text);
-	BINARYNINJACOREAPI void BNNotifyErrorForScriptingInstance(BNScriptingInstance* instance, const char* text);
-	BINARYNINJACOREAPI void BNNotifyInputReadyStateForScriptingInstance(
-	    BNScriptingInstance* instance, BNScriptingProviderInputReadyState state);
-
-	BINARYNINJACOREAPI void BNRegisterScriptingInstanceOutputListener(
-	    BNScriptingInstance* instance, BNScriptingOutputListener* callbacks);
-	BINARYNINJACOREAPI void BNUnregisterScriptingInstanceOutputListener(
-	    BNScriptingInstance* instance, BNScriptingOutputListener* callbacks);
-
-	BINARYNINJACOREAPI const char* BNGetScriptingInstanceDelimiters(BNScriptingInstance* instance);
-	BINARYNINJACOREAPI void BNSetScriptingInstanceDelimiters(BNScriptingInstance* instance, const char* delimiters);
-
-	BINARYNINJACOREAPI BNScriptingProviderInputReadyState BNGetScriptingInstanceInputReadyState(
-	    BNScriptingInstance* instance);
-	BINARYNINJACOREAPI BNScriptingProviderExecuteResult BNExecuteScriptInput(
-	    BNScriptingInstance* instance, const char* input);
-	BINARYNINJACOREAPI void BNCancelScriptInput(BNScriptingInstance* instance);
-	BINARYNINJACOREAPI void BNSetScriptingInstanceCurrentBinaryView(BNScriptingInstance* instance, BNBinaryView* view);
-	BINARYNINJACOREAPI void BNSetScriptingInstanceCurrentFunction(BNScriptingInstance* instance, BNFunction* func);
-	BINARYNINJACOREAPI void BNSetScriptingInstanceCurrentBasicBlock(BNScriptingInstance* instance, BNBasicBlock* block);
-	BINARYNINJACOREAPI void BNSetScriptingInstanceCurrentAddress(BNScriptingInstance* instance, uint64_t addr);
-	BINARYNINJACOREAPI void BNSetScriptingInstanceCurrentSelection(
-	    BNScriptingInstance* instance, uint64_t begin, uint64_t end);
-	BINARYNINJACOREAPI char* BNScriptingInstanceCompleteInput(
-	    BNScriptingInstance* instance, const char* text, uint64_t state);
-	BINARYNINJACOREAPI void BNStopScriptingInstance(BNScriptingInstance* instance);
-
 	// Main thread actions
 	BINARYNINJACOREAPI void BNRegisterMainThread(BNMainThreadCallbacks* callbacks);
 	BINARYNINJACOREAPI BNMainThreadAction* BNNewMainThreadActionReference(BNMainThreadAction* action);
@@ -1067,48 +848,6 @@ extern "C"
 	BINARYNINJACOREAPI void BNFreeMemoryUsageInfo(BNMemoryUsageInfo* info, size_t count);
 
 	BINARYNINJACOREAPI uint32_t BNGetAddressRenderedWidth(uint64_t addr);
-
-	BINARYNINJACOREAPI BNDebugInfoParser* BNRegisterDebugInfoParser(const char* name,
-	    bool (*isValid)(void*, BNBinaryView*), void (*parseInfo)(void*, BNDebugInfo*, BNBinaryView*), void* context);
-	BINARYNINJACOREAPI void BNUnregisterDebugInfoParser(const char* rawName);
-	BINARYNINJACOREAPI BNDebugInfoParser* BNGetDebugInfoParserByName(const char* name);
-	BINARYNINJACOREAPI BNDebugInfoParser** BNGetDebugInfoParsers(size_t* count);
-	BINARYNINJACOREAPI BNDebugInfoParser** BNGetDebugInfoParsersForView(BNBinaryView* view, size_t* count);
-	BINARYNINJACOREAPI char* BNGetDebugInfoParserName(BNDebugInfoParser* parser);
-	BINARYNINJACOREAPI bool BNIsDebugInfoParserValidForView(BNDebugInfoParser* parser, BNBinaryView* view);
-	BINARYNINJACOREAPI BNDebugInfo* BNParseDebugInfo(
-	    BNDebugInfoParser* parser, BNBinaryView* view, BNDebugInfo* existingDebugInfo);
-	BINARYNINJACOREAPI BNDebugInfoParser* BNNewDebugInfoParserReference(BNDebugInfoParser* parser);
-	BINARYNINJACOREAPI void BNFreeDebugInfoParserReference(BNDebugInfoParser* parser);
-	BINARYNINJACOREAPI void BNFreeDebugInfoParserList(BNDebugInfoParser** parsers, size_t count);
-
-	BINARYNINJACOREAPI BNDebugInfo* BNNewDebugInfoReference(BNDebugInfo* debugInfo);
-	BINARYNINJACOREAPI void BNFreeDebugInfoReference(BNDebugInfo* debugInfo);
-	BINARYNINJACOREAPI bool BNAddDebugType(
-	    BNDebugInfo* const debugInfo, const char* const name, const BNType* const type);
-	BINARYNINJACOREAPI BNNameAndType* BNGetDebugTypes(
-	    BNDebugInfo* const debugInfo, const char* const name, size_t* count);
-	BINARYNINJACOREAPI void BNFreeDebugTypes(BNNameAndType* types, size_t count);
-	BINARYNINJACOREAPI bool BNAddDebugFunction(BNDebugInfo* const debugInfo, BNDebugFunctionInfo* func);
-	BINARYNINJACOREAPI BNDebugFunctionInfo* BNGetDebugFunctions(
-	    BNDebugInfo* const debugInfo, const char* const name, size_t* count);
-	BINARYNINJACOREAPI void BNFreeDebugFunctions(BNDebugFunctionInfo* functions, size_t count);
-	BINARYNINJACOREAPI bool BNAddDebugDataVariable(
-	    BNDebugInfo* const debugInfo, uint64_t address, const BNType* const type, const char* name);
-
-	// Secrets providers
-	BINARYNINJACOREAPI BNSecretsProvider* BNRegisterSecretsProvider(
-	    const char* name, BNSecretsProviderCallbacks* callbacks);
-	BINARYNINJACOREAPI BNSecretsProvider** BNGetSecretsProviderList(size_t* count);
-	BINARYNINJACOREAPI void BNFreeSecretsProviderList(BNSecretsProvider** providers);
-	BINARYNINJACOREAPI BNSecretsProvider* BNGetSecretsProviderByName(const char* name);
-
-	BINARYNINJACOREAPI char* BNGetSecretsProviderName(BNSecretsProvider* provider);
-
-	BINARYNINJACOREAPI bool BNSecretsProviderHasData(BNSecretsProvider* provider, const char* key);
-	BINARYNINJACOREAPI char* BNGetSecretsProviderData(BNSecretsProvider* provider, const char* key);
-	BINARYNINJACOREAPI bool BNStoreSecretsProviderData(BNSecretsProvider* provider, const char* key, const char* data);
-	BINARYNINJACOREAPI bool BNDeleteSecretsProviderData(BNSecretsProvider* provider, const char* key);
 
 #ifdef __cplusplus
 }

@@ -41,8 +41,9 @@
 #include "databuffer.hpp"
 #include "functionrecognizer.hpp"
 #include "callingconvention.hpp"
-#include "binaryview.hpp"
+#include "getobject.hpp"
 #include "basicblock.hpp"
+#include "tag.hpp"
 
 using namespace BinaryNinja;
 using namespace std;
@@ -2311,7 +2312,7 @@ bool ArchAndAddr::operator<(const ArchAndAddr& a) const
 string DisassemblyTextRenderer::GetDisplayStringForInteger(
     Ref<BinaryView> binaryView, BNIntegerDisplayType type, uint64_t value, size_t inputWidth, bool isSigned)
 {
-	char* str = BNGetDisplayStringForInteger(binaryView->GetObject(), type, value, inputWidth, isSigned);
+	char* str = BNGetDisplayStringForInteger(GetView(binaryView), type, value, inputWidth, isSigned);
 	string s(str);
 	BNFreeString(str);
 	return s;

@@ -20,7 +20,7 @@
 
 #include "registervalue.h"
 #include "function.hpp"
-#include "binaryview.hpp"
+#include "getobject.hpp"
 #include "mediumlevelilinstruction.h"
 #include "lowlevelil.hpp"
 #include "mediumlevelil.hpp"
@@ -34,7 +34,9 @@
 #include "flowgraph.hpp"
 #include "log.hpp"
 #include "workflow.hpp"
-
+#include "symbol.hpp"
+#include "tag.hpp"
+#include "binaryview.h"
 #include <cstring>
 
 using namespace BinaryNinja;
@@ -162,7 +164,7 @@ Function::~Function()
 
 Ref<BinaryView> Function::GetView() const
 {
-	return new BinaryView(BNGetFunctionData(m_object));
+	return CreateNewView(BNGetFunctionData(m_object));
 }
 
 
@@ -2136,7 +2138,7 @@ void Function::RemoveUserFunctionTagsOfType(Ref<TagType> tagType)
 Ref<Tag> Function::CreateAutoAddressTag(
     Architecture* arch, uint64_t addr, const std::string& tagTypeName, const std::string& data, bool unique)
 {
-	Ref<TagType> tagType = GetView()->GetTagTypeByName(tagTypeName);
+	Ref<TagType> tagType =Tag::GetTagTypeByNameFromView(GetView(), tagTypeName);
 	if (!tagType)
 		return nullptr;
 
@@ -2158,7 +2160,7 @@ Ref<Tag> Function::CreateAutoAddressTag(
 	}
 
 	Ref<Tag> tag = new Tag(tagType, data);
-	GetView()->AddTag(tag);
+	tag->AddToView(GetView());
 
 	AddAutoAddressTag(arch, addr, tag);
 	return tag;
@@ -2168,7 +2170,7 @@ Ref<Tag> Function::CreateAutoAddressTag(
 Ref<Tag> Function::CreateUserAddressTag(
     Architecture* arch, uint64_t addr, const std::string& tagTypeName, const std::string& data, bool unique)
 {
-	Ref<TagType> tagType = GetView()->GetTagTypeByName(tagTypeName);
+	Ref<TagType> tagType = Tag::GetTagTypeByNameFromView(GetView(), tagTypeName);
 	if (!tagType)
 		return nullptr;
 
@@ -2189,7 +2191,7 @@ Ref<Tag> Function::CreateUserAddressTag(
 		}
 	}
 	Ref<Tag> tag = new Tag(tagType, data);
-	GetView()->AddTag(tag);
+	tag->AddToView(GetView());
 
 	AddUserAddressTag(arch, addr, tag);
 	return tag;
@@ -2198,7 +2200,7 @@ Ref<Tag> Function::CreateUserAddressTag(
 
 Ref<Tag> Function::CreateAutoFunctionTag(const std::string& tagTypeName, const std::string& data, bool unique)
 {
-	Ref<TagType> tagType = GetView()->GetTagTypeByName(tagTypeName);
+	Ref<TagType> tagType = Tag::GetTagTypeByNameFromView(GetView(), tagTypeName);
 	if (!tagType)
 		return nullptr;
 
@@ -2219,7 +2221,7 @@ Ref<Tag> Function::CreateAutoFunctionTag(Ref<TagType> tagType, const std::string
 	}
 
 	Ref<Tag> tag = new Tag(tagType, data);
-	GetView()->AddTag(tag);
+	tag->AddToView(GetView());
 
 	AddAutoFunctionTag(tag);
 	return tag;
@@ -2228,7 +2230,7 @@ Ref<Tag> Function::CreateAutoFunctionTag(Ref<TagType> tagType, const std::string
 
 Ref<Tag> Function::CreateUserFunctionTag(const std::string& tagTypeName, const std::string& data, bool unique)
 {
-	Ref<TagType> tagType = GetView()->GetTagTypeByName(tagTypeName);
+	Ref<TagType> tagType = Tag::GetTagTypeByNameFromView(GetView(), tagTypeName);
 	if (!tagType)
 		return nullptr;
 
@@ -2249,7 +2251,7 @@ Ref<Tag> Function::CreateUserFunctionTag(Ref<TagType> tagType, const std::string
 	}
 
 	Ref<Tag> tag = new Tag(tagType, data);
-	GetView()->AddTag(tag);
+	tag->AddToView(GetView());
 
 	AddUserFunctionTag(tag);
 	return tag;

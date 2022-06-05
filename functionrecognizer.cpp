@@ -19,7 +19,7 @@
 // IN THE SOFTWARE.
 #include "functionrecognizer.h"
 #include "functionrecognizer.hpp"
-#include "binaryview.hpp"
+#include "getobject.hpp"
 #include "architecture.hpp"
 #include "lowlevelil.hpp"
 #include "mediumlevelil.hpp"
@@ -35,7 +35,7 @@ bool FunctionRecognizer::RecognizeLowLevelILCallback(
     void* ctxt, BNBinaryView* data, BNFunction* func, BNLowLevelILFunction* il)
 {
 	FunctionRecognizer* recog = (FunctionRecognizer*)ctxt;
-	Ref<BinaryView> dataObj = new BinaryView(BNNewViewReference(data));
+	Ref<BinaryView> dataObj = CreateNewReferencedView(data);
 	Ref<Function> funcObj = new Function(BNNewFunctionReference(func));
 	Ref<LowLevelILFunction> ilObj = new LowLevelILFunction(BNNewLowLevelILFunctionReference(il));
 	return recog->RecognizeLowLevelIL(dataObj, funcObj, ilObj);
@@ -46,7 +46,7 @@ bool FunctionRecognizer::RecognizeMediumLevelILCallback(
     void* ctxt, BNBinaryView* data, BNFunction* func, BNMediumLevelILFunction* il)
 {
 	FunctionRecognizer* recog = (FunctionRecognizer*)ctxt;
-	Ref<BinaryView> dataObj = new BinaryView(BNNewViewReference(data));
+	Ref<BinaryView> dataObj = CreateNewReferencedView(data);
 	Ref<Function> funcObj = new Function(BNNewFunctionReference(func));
 	Ref<MediumLevelILFunction> ilObj = new MediumLevelILFunction(BNNewMediumLevelILFunctionReference(il));
 	return recog->RecognizeMediumLevelIL(dataObj, funcObj, ilObj);

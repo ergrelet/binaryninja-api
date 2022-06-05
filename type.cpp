@@ -22,7 +22,7 @@
 #include "architecture.hpp"
 #include "platform.hpp"
 #include "callingconvention.hpp"
-#include "binaryview.hpp"
+#include "getobject.hpp"
 #include "typeparser.hpp"
 #include <inttypes.h>
 
@@ -781,7 +781,7 @@ Ref<Type> Type::NamedType(const string& id, const QualifiedName& name, Type* typ
 Ref<Type> Type::NamedType(BinaryView* view, const QualifiedName& name)
 {
 	BNQualifiedName nameObj = name.GetAPIObject();
-	BNType* coreObj = BNCreateNamedTypeReferenceFromType(view->GetObject(), &nameObj);
+	BNType* coreObj = BNCreateNamedTypeReferenceFromType(GetView(view), &nameObj);
 	QualifiedName::FreeAPIObject(&nameObj);
 	return coreObj ? new Type(BNNewTypeReference(coreObj)) : nullptr;
 }
@@ -1120,7 +1120,7 @@ bool Type::AddTypeMemberTokens(BinaryView* data, vector<InstructionTextToken>& t
 	char** names = nullptr;
 
 	if (!BNAddTypeMemberTokens(
-	        m_object, data->GetObject(), &list, &tokenCount, offset, &names, &nameCount, size, indirect))
+	        m_object, GetView(data), &list, &tokenCount, offset, &names, &nameCount, size, indirect))
 		return false;
 
 	vector<InstructionTextToken> newTokens =
@@ -1143,7 +1143,7 @@ std::vector<TypeDefinitionLine> Type::GetLines(Ref<BinaryView> data, const std::
 {
 	size_t count;
 	BNTypeDefinitionLine* list =
-		BNGetTypeLines(m_object, data->m_object, name.c_str(), lineWidth, collapsed, escaping, &count);
+		BNGetTypeLines(m_object, GetView(data), name.c_str(), lineWidth, collapsed, escaping, &count);
 
 	std::vector<TypeDefinitionLine> results;
 	for (size_t i = 0; i < count; i++)
@@ -1590,7 +1590,7 @@ TypeBuilder TypeBuilder::NamedType(const string& id, const QualifiedName& name, 
 TypeBuilder TypeBuilder::NamedType(BinaryView* view, const QualifiedName& name)
 {
 	BNQualifiedName nameObj = name.GetAPIObject();
-	BNTypeBuilder* coreObj = BNCreateNamedTypeReferenceBuilderFromType(view->GetObject(), &nameObj);
+	BNTypeBuilder* coreObj = BNCreateNamedTypeReferenceBuilderFromType(GetView(view), &nameObj);
 	QualifiedName::FreeAPIObject(&nameObj);
 	return coreObj ? TypeBuilder(coreObj) : VoidType();
 }

@@ -20,7 +20,7 @@
 
 #include "flowgraph.hpp"
 #include "function.hpp"
-#include "binaryview.hpp"
+#include "getobject.hpp"
 #include "lowlevelil.hpp"
 #include "mediumlevelil.hpp"
 #include "highlevelil.hpp"
@@ -168,7 +168,7 @@ Ref<BinaryView> FlowGraph::GetView() const
 	BNBinaryView* view = BNGetViewForFlowGraph(m_object);
 	if (!view)
 		return nullptr;
-	return new BinaryView(view);
+	return CreateNewView(view);
 }
 
 
@@ -180,7 +180,7 @@ void FlowGraph::SetFunction(Function* func)
 
 void FlowGraph::SetView(BinaryView* view)
 {
-	BNSetViewForFlowGraph(m_object, view ? view->GetObject() : nullptr);
+	BNSetViewForFlowGraph(m_object, view ? BinaryNinja::GetView(view) : nullptr);
 }
 
 

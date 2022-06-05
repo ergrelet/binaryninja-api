@@ -25,7 +25,10 @@ CoreRefCountObject::~CoreRefCountObject()
 {}
 
 
-T* CoreRefCountObject::GetObject() const { return m_object; }
+T* CoreRefCountObject::GetObject() const
+{
+	return m_object;
+}
 
 static T* CoreRefCountObject::GetObject(CoreRefCountObject* obj)
 {

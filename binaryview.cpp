@@ -43,6 +43,7 @@
 #include "flowgraph.hpp"
 #include "settings.hpp"
 #include "binaryviewtype.hpp"
+#include "symbol.hpp"
 #include "binaryninjaapi_new.hpp"
 
 using namespace BinaryNinja;
